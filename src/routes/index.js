@@ -59,7 +59,7 @@ const rutasProtegidas = (req, res, next) => {
 };
 
 router.get('/', (req, res) => {
-    res.send('Benny Payaso');
+    res.send('Benny Payasooo');
   })
 
 //pequeña prueba
