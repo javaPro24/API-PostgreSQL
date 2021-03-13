@@ -58,6 +58,10 @@ const rutasProtegidas = (req, res, next) => {
     }
 };
 
+router.get('/', (req, res) => {
+    res.send('Benny Payaso');
+  })
+
 //pequeña prueba
 //se ejecutará la función pruebilla despues de haberse ejecutado
 //la función de autenticación rutasProtegidas (valida token)
