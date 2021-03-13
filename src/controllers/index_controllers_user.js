@@ -75,8 +75,8 @@ const addUser = async (req,res) => {
     if (resp1.rowCount>0) {
         //ya hay un usuario en BD con ese nombre
         res.status(404).json({
-            message: 'User already exists',
-            codigo: '0'
+            message: '0',
+            //codigo: '0'
         })
     }
     else {
@@ -88,17 +88,16 @@ const addUser = async (req,res) => {
         const resp = await conexion.query('INSERT INTO usuarios (nombre,password) VALUES ($1,$2)', [nombre,hash]);
         
         //genero el token para el usuario, meto su nombre de user en el token y lo cifro con la clave.
-        const accessToken = jwt.sign({ username: nombre}, config.llave_token, {
-            expiresIn: 60 * 60 * 24 // expires in 24 hours
-        });
+        //const accessToken = jwt.sign({ username: nombre}, config.llave_token, {
+        //    expiresIn: 60 * 60 * 24 // expires in 24 hours
+        //});
 
         //envío al cliente otro JSON, con un msj y el token de autenticación.
         res.json({
-            message: 'Usuario introducido correctamente',
-            token: accessToken
+            message: '1',
+            //token: accessToken
         })
     }
-
 };
 
 //elimino a un usuario de la BD. 
