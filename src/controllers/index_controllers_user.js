@@ -50,7 +50,7 @@ const getUsers = async (req,res) => {
 
 const try_bd_heroku = async (req, res) => {
     try {
-      const client = await pool.connect();
+      const client = await conexion.connect();
       const result = await client.query('SELECT * FROM test_table');
       const results = { 'results': (result) ? result.rows : null};
       res.render('pages/db', results );
