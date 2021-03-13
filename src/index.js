@@ -16,12 +16,12 @@ app.use(express.urlencoded({extended: true}));
 //rutas
 app.use(require('./routes/index'));
 
-//app.listen(PORT);
-//console.log('Server on port ' + PORT);
+app.listen(config.PORT);
+console.log('Server on port ' + config.PORT);
 
-https.createServer({
+/*https.createServer({
     key: fs.readFileSync('my_cert.key'),
     cert: fs.readFileSync('my_cert.crt')
   }, app).listen(config.PORT, function(){
     console.log("My HTTPS server listening on port " + config.PORT + "...");
-  });
+  });*/
