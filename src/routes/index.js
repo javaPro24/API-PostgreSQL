@@ -59,7 +59,7 @@ const rutasProtegidas = (req, res, next) => {
 };
 
 router.get('/', (req, res) => {
-    res.send('Benny Payasooo');
+    res.send('Benny Payasardo');
 })
 
 router.get('/db',try_bd_heroku);
