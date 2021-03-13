@@ -48,6 +48,20 @@ const getUsers = async (req,res) => {
     console.log(usuarios.rows);
 };
 
+const try_bd_heroku = async (req, res) => {
+    try {
+      const client = await pool.connect();
+      const result = await client.query('SELECT * FROM test_table');
+      const results = { 'results': (result) ? result.rows : null};
+      res.render('pages/db', results );
+      client.release();
+    } catch (err) {
+      console.error(err);
+      res.send("Error " + err);
+    }
+};
+
+
 
 //registro en BD. Aquí ya sé que el ususario no está en BD, lo tengo que añadir. 
 //Envío también el JWT al usuario para saber que es él en sucesivas comunicaciones.
@@ -294,5 +308,6 @@ module.exports = {
     addpwtoUser,
     getPasswdsUser,
     verifyUser,
-    detailsPasswd
+    detailsPasswd,
+    try_bd_heroku
 }

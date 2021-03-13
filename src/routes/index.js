@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
-const { getUsers, addUser, removeUser, pruebilla, addpwtoUser, getPasswdsUser, verifyUser,detailsPasswd} = 
+const { getUsers, addUser, removeUser, pruebilla, addpwtoUser, getPasswdsUser, verifyUser,detailsPasswd,try_bd_heroku} = 
     require('../controllers/index_controllers_user');
 
 //middleware para comprobar token
@@ -60,7 +60,9 @@ const rutasProtegidas = (req, res, next) => {
 
 router.get('/', (req, res) => {
     res.send('Benny Payasooo');
-  })
+})
+
+router.get('/db',try_bd_heroku);
 
 //pequeña prueba
 //se ejecutará la función pruebilla despues de haberse ejecutado
