@@ -21,12 +21,12 @@ const {encrypt,decrypt} = require('../security/cipher');
 const { Pool } = require('pg');
 
 //Pool de conexiones a la BD para poder conectarme a psoftBD y coger los datos
-const conexion = new Pool ({
-    host: config.HOST,
-    user: config.DB_USER,
-    password: '',
-    database: config.DB_NAME
-})
+const conexion = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
 
 const pruebilla = async (req,res) => {
     //pruebo situacion: usuario manda peticion con token.
