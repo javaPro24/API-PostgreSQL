@@ -138,7 +138,7 @@ const addpwtoUser = async (req,res) => {
     //cojo el par user-pass concreto y el dominio (fb,twitter,amazon...)
     const {concreteuser,concretepasswd,dominio,fechacreacion,fechacaducidad,nombre,categoria} = req.body;
     const tipo = "usuario-passwd"
-    const fichero = "NULL";
+    const fichero = null;
     //cojo el nombre de usuario del token que me han pasado
     const usuarioPrincipal = req.usuario;
 
