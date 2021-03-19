@@ -123,7 +123,7 @@ const userRemove = async (req,res) => {
     }
     else {
     //envío al cliente JSON con un msj de ACK (ha ido ok)
-        res.status(404).json({
+        res.status(200).json({
             message: 'Usuario deleteado correctamente'
         })
     }
