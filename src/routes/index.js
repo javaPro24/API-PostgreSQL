@@ -36,6 +36,7 @@ const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser
     }
 };*/
 
+//MIDDLEWARE.
 const rutasProtegidas = (req, res, next) => {
     //cojo la cabecera authorization, donde está el el token
     const authHeader = req.headers.authorization;
@@ -58,14 +59,17 @@ const rutasProtegidas = (req, res, next) => {
     }
 };
 
+//página de inicio (nadie va a hacer get aquí)
 router.get('/', (req, res) => {
-    res.send('Benny Payasardo');
+    res.send('Fresh tech API running...');
 })
 
 //pequeña prueba
 //se ejecutará la función pruebilla despues de haberse ejecutado
 //la función de autenticación rutasProtegidas (valida token)
-router.get('/prueba',rutasProtegidas,pruebilla);    
+router.get('/prueba',rutasProtegidas,pruebilla);   
+
+// -------------- USERS --------------
 
 //LOGIN. 
 router.post('/login',userLogin);  
@@ -77,15 +81,17 @@ router.post('/signin',userSignin);
 router.delete('/removeAccount',rutasProtegidas,userRemove);
 
 
-
+// -------------- PASSWORDS --------------
 
 //almacenamos una contraseña para un usuario
-router.post('/passwd',rutasProtegidas,addpwtoUser)
+router.post('/passwd',rutasProtegidas,addpwtoUser);
 
 //sacamos el nombre de todas las contraseñas asociadas a un usuario en concreto 
-router.get('/passwdUser',rutasProtegidas,getPasswdsUser)
+router.get('/passwdUser',rutasProtegidas,getPasswdsUser);
 
 //sacamos los detalles de una contraseña 
-router.get('/detailspasswd',rutasProtegidas,detailsPasswd)
+router.get('/detailspasswd',rutasProtegidas,detailsPasswd);
+
+
 
 module.exports = router;

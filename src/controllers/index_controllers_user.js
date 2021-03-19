@@ -107,7 +107,7 @@ const userSignin = async (req,res) => {
     }
 };
 
-//elimino a un usuario de la BD. 
+//DELETE ACCOUNT. 
 //Al eliminarse, se eliminan tb sus contraseñas (por el DELETE on CASCADE)
 const userRemove = async (req,res) => {
     //me pasan el JSON del usuario, me quedo con su nombre (clave primaria)
@@ -131,16 +131,14 @@ const userRemove = async (req,res) => {
 
 // -------------- PASSWORDS --------------
 
-//solamente añade un simple par usuario-contraseña asociado a un 
-//usuario de la BD. Las pruebas se hacen con loco@hotmail.com
-//se comprueba que el tío no meta dos contraseñas iguales (con igual nombre)
+//solamente añade un simple par usuario-contraseña asociado a un user.
 //si quiere tener dos de github pues la primera tendrá de nombre github pero la segunda tendrá de nombre github2
 //porque en bd ya hay una que se llama github.
 const addpwtoUser = async (req,res) => {
     //cojo el par user-pass concreto y el dominio (fb,twitter,amazon...)
     const {concreteuser,concretepasswd,dominio,fechacreacion,fechacaducidad,nombre,categoria} = req.body;
     const tipo = "usuario-passwd"
-    const fichero = "NULL"
+    const fichero = null;
     //cojo el nombre de usuario del token que me han pasado
     const usuarioPrincipal = req.usuario;
 
@@ -163,7 +161,7 @@ const addpwtoUser = async (req,res) => {
             [usuarioPrincipal,tipo,concreteuser,encrypted_passwd,dominio,fichero,categoria,fechacreacion,fechacaducidad,nombre]);
     
         //envío al cliente otro JSON, con un msj y el user creado.
-        res.json({
+        res.status(200).json({
             message: 'Contraseña introducida correctamente'
         })
     }
@@ -185,7 +183,7 @@ const getPasswdsUser = async (req,res) => {
     const resp = 
     await conexion.query('SELECT dominio,nombre from contrasenya where email=$1',[usuarioPrincipal]);
     
-    //envío al cliente otro JSON, con un msj y el user creado.
+    //envío al cliente el JSON con las passwds que tiene ese user
     res.status(200).json(resp.rows);
 };
 
