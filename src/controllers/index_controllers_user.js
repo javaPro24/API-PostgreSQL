@@ -113,7 +113,7 @@ const userRemove = async (req,res) => {
     //me pasan el JSON del usuario, me quedo con su nombre (clave primaria)
     const usuarioPrincipal = req.usuario;
     //elimino al usuario en cuestión
-    const resp = await conexion.query('DELETE FROM usuarios WHERE nombre=$1', [nombre]);
+    const resp = await conexion.query('DELETE FROM usuarios WHERE nombre=$1', [usuarioPrincipal]);
     
     //si resp.rowCount es cero es que no ha deleteado ninguna row (el user no existe)
     if (resp.rowCount==0) {
@@ -123,7 +123,7 @@ const userRemove = async (req,res) => {
     }
     else {
     //envío al cliente JSON con un msj de ACK (ha ido ok)
-        res.json({
+        res.status(404).json({
             message: 'Usuario deleteado correctamente'
         })
     }
