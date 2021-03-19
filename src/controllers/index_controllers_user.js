@@ -190,12 +190,15 @@ const getPasswdsUser = async (req,res) => {
 //saca los detalles de la contraseña en específico (par,fichero ó imagen)
 const detailsPasswd = async (req,res) => {
     //nombre de la contraseña en específico
-    const nombrePassword = req.query.nombre;
+    let nombrePassword = req.query.nombre;
     //nombre del usuario que ha creado la contraseña. Lo saco del token.
     const nombreUsuario = req.usuario;
+
+    res.send(nombrePassword + "  " + nombreUsuario);
     //selecciono el tipo de contraseña que es
     const resp1 = await conexion.query('SELECT tipo from contrasenya where (email=$1 and nombre=$2)',[nombreUsuario,nombrePassword]);
     
+    /*
     // ** COMPROBAR ANTES QUE TENGA UNA QUE SE LLAME ASÍ **
     if (resp1.rowCount==0) {
         res.status(404).json({
@@ -250,7 +253,7 @@ const detailsPasswd = async (req,res) => {
             break;
 
         }
-    }
+    }*/
     
 };
 
