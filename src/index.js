@@ -2,16 +2,12 @@ const fs = require('fs');
 const https = require('https');
 const express = require('express');
 const config = require('../env/config');
-const bodyParser = require('body-parser');
 const app = express();
-
 
 //defino los middlewares
 //cuando el cliente me envíe un objeto json, la API lo entenderá y lo convertirá a javascript
 //que es el tipo del fichero que estoy construyendo
 app.use(express.json());
-
-app.use(bodyParser.json());
 
 //me puede enviar un dato en forma de formulario
 //lo de extended es para decirle que tb puedo recibir imagenes y tal
