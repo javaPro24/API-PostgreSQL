@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
-const { getUsers, addUser, removeUser, pruebilla, addpwtoUser, getPasswdsUser, verifyUser,detailsPasswd,try_bd_heroku} = 
+const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd} = 
     require('../controllers/index_controllers_user');
 
 //middleware para comprobar token
@@ -62,30 +62,28 @@ router.get('/', (req, res) => {
     res.send('Benny Payasardo');
 })
 
-router.get('/db',try_bd_heroku);
-
 //pequeña prueba
 //se ejecutará la función pruebilla despues de haberse ejecutado
 //la función de autenticación rutasProtegidas (valida token)
-router.get('/prueba',rutasProtegidas,pruebilla);
+router.get('/prueba',rutasProtegidas,pruebilla);    
 
-//get sirve para coger datos, coger usuarios. 
-router.get('/users',getUsers);
+//LOGIN. 
+router.post('/login',userLogin);  
 
-//si en el front hay registro -> petición a esta ruta !!! 
-router.post('/users',addUser);
+//SIGNIN.
+router.post('/signin',userSignin);  
 
-//delete es para eliminar datos
-router.delete('/users',removeUser);
+//DELETE ACCOUNT.
+router.delete('/removeAccount',rutasProtegidas,userRemove);
+
+
+
 
 //almacenamos una contraseña para un usuario
 router.post('/passwd',rutasProtegidas,addpwtoUser)
 
 //sacamos el nombre de todas las contraseñas asociadas a un usuario en concreto 
 router.get('/passwdUser',rutasProtegidas,getPasswdsUser)
-
-//si en el front hay inicio de sesión -> petición a esta ruta !!!
-router.get('/verify', verifyUser);
 
 //sacamos los detalles de una contraseña 
 router.get('/detailspasswd',rutasProtegidas,detailsPasswd)

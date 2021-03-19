@@ -26,7 +26,7 @@ const conexion = new Pool({
     ssl: {
       rejectUnauthorized: false
     }
-  });
+});
 
 const pruebilla = async (req,res) => {
     //pruebo situacion: usuario manda peticion con token.
@@ -40,79 +40,85 @@ const pruebilla = async (req,res) => {
     
 };
 
-//obtengo información de la BD.
-//si me mandan un GET de los usuarios de la BD, les muestro lo siguiente.
-const getUsers = async (req,res) => {
-    const usuarios = await conexion.query('Select * from usuarios');
-    res.status(200).json(usuarios.rows);
-    console.log(usuarios.rows);
-};
+// -------------- USERS --------------
 
-const try_bd_heroku = async (req, res) => {
-    try {
-      const client = await conexion.connect();
-      const result = await client.query('SELECT * FROM test_table');
-      const results = { 'results': (result) ? result.rows : null};
-      res.render('pages/db', results );
-      client.release();
-    } catch (err) {
-      console.error(err);
-      res.send("Error " + err);
+//LOG IN. (return token if user valid)
+const userLogin = async (req,res) => {
+    //cojo el usuario y su pass
+    const {nombre, password} = req.body;
+    //miro si el usuario está en bd y si está, obtengo su password (estará cifrada claro)
+    const resp1 = await conexion.query('SELECT password from usuarios where nombre=$1',[nombre]);
+
+    //si no has podido seleccionar ninguna row (no hay user con ese nombre)...
+    if (resp1.rowCount==0) {
+        //el usuario ni está en bd porque no lo encuentro en bd
+        res.status(404).json({
+            message: 'User does not exist',
+            codigo: '0'
+        })
+    }
+    else{
+        //comparo con esta funcioncita la password que me envían del front
+        //(con la que el user quiere hacer log in) con la que tiene ese user en bd
+        if (bcrypt.compareSync(password, resp1.rows[0].password)) {
+            // Passwords match, generate JWT and send info to user.
+            const accessToken = jwt.sign({ username: nombre}, config.llave_token, {
+                expiresIn: 60 * 60 * 24 // expires in 24 hours
+            });
+
+            res.json({
+                message: 'User OK',
+                codigo: '1',
+                token: accessToken
+            })
+        } 
+        else {
+            // Passwords don't match
+            res.status(404).json({
+                message: 'Password NOT OK',
+                codigo: '0'
+            })
+        }
     }
 };
 
-
-
-//registro en BD. Aquí ya sé que el ususario no está en BD, lo tengo que añadir. 
-//Envío también el JWT al usuario para saber que es él en sucesivas comunicaciones.
-const addUser = async (req,res) => {
+//SIGNIN.
+const userSignin = async (req,res) => {
     //cojo el nombre y la pw del JSON que me envían (del usuario que hay q meter en BD)
     const {nombre,password} = req.body;
-
     //comprobamos que no esté en BD ya
     const resp1 = await conexion.query('SELECT * from usuarios where nombre=$1',[nombre]);
-    
     if (resp1.rowCount>0) {
         //ya hay un usuario en BD con ese nombre
         res.status(404).json({
-            message: '0',
-            //codigo: '0'
+            message: '0'
         })
     }
     else {
         //el usuario no está en BD -> lo añado
         //hasheo la password del usuario
         let hash = bcrypt.hashSync(password, saltRounds);
-        
         //inserto el usuario junto a su contraseña cifrada en la base de datos
         const resp = await conexion.query('INSERT INTO usuarios (nombre,password) VALUES ($1,$2)', [nombre,hash]);
-        
-        //genero el token para el usuario, meto su nombre de user en el token y lo cifro con la clave.
-        //const accessToken = jwt.sign({ username: nombre}, config.llave_token, {
-        //    expiresIn: 60 * 60 * 24 // expires in 24 hours
-        //});
-
-        //envío al cliente otro JSON, con un msj y el token de autenticación.
+        //respondo que ya se ha insertado al user.
         res.json({
-            message: '1',
-            //token: accessToken
+            message: '1'
         })
     }
 };
 
 //elimino a un usuario de la BD. 
 //Al eliminarse, se eliminan tb sus contraseñas (por el DELETE on CASCADE)
-const removeUser = async (req,res) => {
+const userRemove = async (req,res) => {
     //me pasan el JSON del usuario, me quedo con su nombre (clave primaria)
-    const nombre = req.body.nombre;
-
-    //inserto en la el nombre y la pw del usuario que me han pasado
+    const usuarioPrincipal = req.usuario;
+    //elimino al usuario en cuestión
     const resp = await conexion.query('DELETE FROM usuarios WHERE nombre=$1', [nombre]);
-
+    
     //si resp.rowCount es cero es que no ha deleteado ninguna row (el user no existe)
     if (resp.rowCount==0) {
-        res.json({
-            message: 'Usuario no existe en BD'
+        res.status(404).json({
+            message: 'Usuario no existe!!'
         })
     }
     else {
@@ -121,8 +127,9 @@ const removeUser = async (req,res) => {
             message: 'Usuario deleteado correctamente'
         })
     }
-
 };
+
+// -------------- PASSWORDS --------------
 
 //solamente añade un simple par usuario-contraseña asociado a un 
 //usuario de la BD. Las pruebas se hacen con loco@hotmail.com
@@ -180,52 +187,6 @@ const getPasswdsUser = async (req,res) => {
     
     //envío al cliente otro JSON, con un msj y el user creado.
     res.status(200).json(resp.rows);
-};
-
-
-//si usuario está en BD -> le mando token
-//si ha puesto mal la passwd (pero el email existe) -> le mando error (passwd incorrecta)
-//si ni siquiera existe el mail -> le mando error y que se registre o algo
-const verifyUser = async (req,res) => {
-    //cojo el usuario y su pass
-    const {nombre, password} = req.body;
-
-    //miro si el usuario está en bd y si está, obtengo su password (estará cifrada claro)
-    const resp1 = await conexion.query('SELECT password from usuarios where nombre=$1',[nombre]);
-
-    //si no has podido seleccionar ninguna row (no hay user con ese nombre)...
-    if (resp1.rowCount==0) {
-        //el usuario ni está en bd porque no lo encuentro en bd
-        res.status(404).json({
-            message: 'User not in DB',
-            codigo: '0'
-        })
-    }
-    else{
-        //comparo con esta funcioncita la password que me envían del front
-        //(con la que el user quiere hacer log in) con la que tiene ese user en bd
-        if (bcrypt.compareSync(password, resp1.rows[0].password)) {
-            // Passwords match, generate JWT and send info to user.
-            const accessToken = jwt.sign({ username: nombre}, config.llave_token, {
-                expiresIn: 60 * 60 * 24 // expires in 24 hours
-            });
-
-            res.json({
-                message: 'User OK',
-                codigo: '1',
-                token: accessToken
-            })
-        } 
-        else {
-            // Passwords don't match
-            res.status(404).json({
-                message: 'Password NOT OK',
-                codigo: '0'
-            })
-        }
-    }
-
-
 };
 
 //saca los detalles de la contraseña en específico (par,fichero ó imagen)
@@ -300,13 +261,11 @@ const detailsPasswd = async (req,res) => {
 //aquí simplemente digo que exporto las funciones aquí definidas para que
 //se puedan usar en el módulo de index.js (routes)
 module.exports = {
-    getUsers,
-    addUser,
-    removeUser,
+    userLogin,
+    userSignin,
+    userRemove,
     pruebilla,
     addpwtoUser,
     getPasswdsUser,
-    verifyUser,
-    detailsPasswd,
-    try_bd_heroku
+    detailsPasswd
 }
