@@ -190,7 +190,7 @@ const getPasswdsUser = async (req,res) => {
 //saca los detalles de la contraseña en específico (par,fichero ó imagen)
 const detailsPasswd = async (req,res) => {
     //nombre de la contraseña en específico
-    const {nombrePassword} = req.body;
+    const {nombrePassword} = req.query.nombre;
     //nombre del usuario que ha creado la contraseña. Lo saco del token.
     const nombreUsuario = req.usuario;
     //selecciono el tipo de contraseña que es
