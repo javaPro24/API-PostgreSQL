@@ -129,6 +129,24 @@ const userRemove = async (req,res) => {
     }
 };
 
+//CHANGE PASSWD
+const userChangePw = async (req,res) => {
+    //cojo la nueva pw que quiere el user
+    const {password} = req.body;
+    //cojo el nombre de usuario del token que me han pasado
+    const usuarioPrincipal = req.usuario;
+    //no compruebo q esta en BD pq al tener token, se ha tenido que loguear -> está en BD 100%
+    //cambiamos la pass
+    let hash = bcrypt.hashSync(password, saltRounds);
+    //inserto el usuario junto a su contraseña cifrada en la base de datos
+    const resp = await conexion.query('UPDATE usuarios SET password=$1 where (nombre=$2)', [hash,usuarioPrincipal]);
+    //respondo que ya se ha insertado al user.
+    res.json({
+        message: 'Password changed correctly'
+    })
+};
+
+
 // -------------- PASSWORDS --------------
 
 //solamente añade un simple par usuario-contraseña asociado a un user.
@@ -266,5 +284,6 @@ module.exports = {
     pruebilla,
     addpwtoUser,
     getPasswdsUser,
-    detailsPasswd
+    detailsPasswd,
+    userChangePw
 }

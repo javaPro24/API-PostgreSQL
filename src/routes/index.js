@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
-const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd} = 
+const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd,userChangePw} = 
     require('../controllers/index_controllers_users');
 
 //middleware para comprobar token
@@ -79,6 +79,9 @@ router.post('/signin',userSignin);
 
 //DELETE ACCOUNT.
 router.delete('/removeAccount',rutasProtegidas,userRemove);
+
+//CHANGE PASSWORD. (cambia la pw una vez logueado)
+router.post('/changepw',rutasProtegidas,userChangePw);
 
 
 // -------------- PASSWORDS --------------
