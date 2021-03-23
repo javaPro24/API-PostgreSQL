@@ -9,6 +9,9 @@ const app = express();
 //que es el tipo del fichero que estoy construyendo
 app.use(express.json());
 
+//INTRODUCIMOS EL CORS
+app.use(cors());
+
 //me puede enviar un dato en forma de formulario
 //lo de extended es para decirle que tb puedo recibir imagenes y tal
 app.use(express.urlencoded({extended: true}));
