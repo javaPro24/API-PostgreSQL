@@ -2,6 +2,7 @@ const fs = require('fs');
 const https = require('https');
 const express = require('express');
 const config = require('../env/config');
+const cors = require('cors');
 const app = express();
 
 //defino los middlewares
@@ -9,7 +10,7 @@ const app = express();
 //que es el tipo del fichero que estoy construyendo
 app.use(express.json());
 
-//INTRODUCIMOS EL CORSS
+//INTRODUCIMOS EL CORS
 app.use(cors());
 
 //me puede enviar un dato en forma de formulario
