@@ -9,7 +9,7 @@ const app = express();
 //que es el tipo del fichero que estoy construyendo
 app.use(express.json());
 
-//INTRODUCIMOS EL CORS
+//INTRODUCIMOS EL CORSS
 app.use(cors());
 
 //me puede enviar un dato en forma de formulario
