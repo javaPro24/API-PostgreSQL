@@ -273,6 +273,34 @@ const detailsPasswd = async (req,res) => {
     
 };
 
+// -------------- CATEGORIES --------------
+//crea una categoria asociada al usuario en cuestion.
+const addCat = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    const {nombrecategoria} = req.body;
+
+    //miro si tiene una categoria con ese nombre
+    const resp = 
+    await conexion.query('SELECT * from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
+
+    if (resp.rowCount==0) {
+        //puedo crearla
+        const resp = 
+        await conexion.query('INSERT INTO categorias (nombrecat,mail) VALUES ($1,$2)',[nombrecategoria,usuarioPrincipal]);
+
+        res.status(200).json({
+            message: 'Category created'
+        })
+    }
+    else {
+        //ya tienes una que se llama así
+        res.status(404).json({
+            message: 'Already a category with that name'
+        })
+    }
+};
+
 
 
 //aquí simplemente digo que exporto las funciones aquí definidas para que
@@ -285,5 +313,6 @@ module.exports = {
     addpwtoUser,
     getPasswdsUser,
     detailsPasswd,
-    userChangePw
+    userChangePw,
+    addCat
 }
