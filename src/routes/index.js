@@ -99,7 +99,7 @@ router.get('/detailspasswd',rutasProtegidas,detailsPasswd);
 // -------------- PASSWORDS --------------
 
 //almacenamos una categoria para un usuario
-router.post('/',rutasProtegidas,addCat);
+router.post('/addcat',rutasProtegidas,addCat);
 
 
 
