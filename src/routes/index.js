@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
-const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd,userChangePw,
+const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, deletepasswd, getPasswdsUser,detailsPasswd,userChangePw,
     addCat,addCatToPasswd,getCat,deleteCat,filterCat} = 
     require('../controllers/index_controllers_users');
 
@@ -95,6 +95,9 @@ router.get('/passwdUser',rutasProtegidas,getPasswdsUser);
 
 //sacamos los detalles de una contraseña 
 router.get('/detailspasswd',rutasProtegidas,detailsPasswd);
+
+//eliminar una contraseña
+router.delete('/deletepasswd',rutasProtegidas,deletepasswd);
 
 
 // -------------- CATEGORIES --------------

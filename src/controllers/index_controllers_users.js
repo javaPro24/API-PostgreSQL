@@ -196,12 +196,58 @@ const addpwtoUser = async (req,res) => {
 const getPasswdsUser = async (req,res) => {
     //cojo nombre del usuario del token que me pasa.
     const usuarioPrincipal = req.usuario;
+    //cojo los parametros de ordenacion que me pasan en la QUERY
+    let ordenarPor = req.query.ordenarPor;  //nombre, fechacreacion ó fechacaducidad
+    let ordenarDe = req.query.ordenarDe;    //ASC o DESC
 
-    //pregunto por las passwds de este usuario
-    const resp = 
-    await conexion.query('SELECT dominio,nombre from contrasenya where email=$1',[usuarioPrincipal]);
+    //NO DEJA USAR ORDER BY $1. Hay que hacerlo manualmente.
+    var resp;
+    switch(ordenarPor) {
+        case "nombre":
+            if (ordenarDe=="ASC") {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY nombre ASC',[usuarioPrincipal]);
+            }
+            else {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY nombre DESC',[usuarioPrincipal]);
+            }
+        break;
+
+        case "fechacreacion":
+            if (ordenarDe=="ASC") {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY fechacreacion ASC',[usuarioPrincipal]);
+            }
+            else {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY fechacreacion DESC',[usuarioPrincipal]);
+            }
+        break;
     
-    //envío al cliente el JSON con las passwds que tiene ese user
+        case "fechacaducidad":
+            if (ordenarDe=="ASC") {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY fechacaducidad ASC',[usuarioPrincipal]);
+            }
+            else {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY fechacaducidad DESC',[usuarioPrincipal]);
+            }
+        break;
+
+        case "categoria":
+            if (ordenarDe=="ASC") {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY categoria ASC',[usuarioPrincipal]);
+            }
+            else {
+                resp = 
+                await conexion.query('SELECT dominio,nombre,tipo,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 ORDER BY categoria DESC',[usuarioPrincipal]);
+            }
+        break;
+
+    }
     res.status(200).json(resp.rows);
 };
 
@@ -273,7 +319,38 @@ const detailsPasswd = async (req,res) => {
     
 };
 
+//elimina la contraseña con el nombre que sea
+const deletepasswd = async (req,res) => {
+    //cojo el nombre de la password solicitada
+    const {nombre} = req.body;
+    //cojo el nombre de usuario del token que me han pasado
+    const usuarioPrincipal = req.usuario;
+
+    //miro si ya existe un par usuario-passwd con mismo nombre que el que quiere el usuario
+    const aux = await conexion.query('select nombre from contrasenya where (email=$1 and nombre=$2)',[usuarioPrincipal,nombre]);
+
+    //se puede añadir
+    if (aux.rows!=0) {
+        //elimino de BD la contraseña en cuestión
+        const resp = 
+        await conexion.query('DELETE FROM contrasenya where (email=$1 and nombre=$2)',[usuarioPrincipal,nombre]);
+    
+        //envío al cliente otro JSON, con un msj y el user creado.
+        res.status(200).json({
+            message: 'Contraseña eliminada correctamente'
+        })
+    }
+    else {
+        //ya hay una contraseña para él con ese nombre
+        res.status(404).json({
+            message: 'No hay contraseña con ese nombre'
+        })
+    }
+};
+
+
 // -------------- CATEGORIES --------------
+
 //crea una categoria asociada al usuario en cuestion.
 const addCat = async (req,res) => {
     //cojo nombre del usuario del token que me pasa.
@@ -406,6 +483,7 @@ module.exports = {
     addpwtoUser,
     getPasswdsUser,
     detailsPasswd,
+    deletepasswd,
     userChangePw,
     addCat,
     getCat,
