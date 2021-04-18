@@ -449,7 +449,7 @@ const deleteCat = async (req,res) => {
         //elimino la categoria para ese user
         const resp2 = 
         await conexion.query('DELETE from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
-        res.status(404).json({
+        res.status(200).json({
             message: 'Category deleted'
         })
     }
