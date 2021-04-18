@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
-const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd,userChangePw,addCat} = 
+const {userLogin, userSignin, userRemove, pruebilla, addpwtoUser, getPasswdsUser,detailsPasswd,userChangePw,
+    addCat,addCatToPasswd,getCat,deleteCat,filterCat} = 
     require('../controllers/index_controllers_users');
 
 //middleware para comprobar token
@@ -96,10 +97,22 @@ router.get('/passwdUser',rutasProtegidas,getPasswdsUser);
 router.get('/detailspasswd',rutasProtegidas,detailsPasswd);
 
 
-// -------------- PASSWORDS --------------
+// -------------- CATEGORIES --------------
 
 //almacenamos una categoria para un usuario
 router.post('/addcat',rutasProtegidas,addCat);
+
+//asignarle a una contraseña una categoria ya creada por el user
+router.post('/catpasswd',rutasProtegidas,addCatToPasswd);
+
+//obtenemos las contraseñas del usuario
+router.get('/getcat',rutasProtegidas,getCat);
+
+//obtenemos las contraseñas del usuario
+router.delete('/deletecat',rutasProtegidas,deleteCat);
+
+//filtramos por categoria en específico
+router.get('/filtercat',rutasProtegidas,filterCat);
 
 
 

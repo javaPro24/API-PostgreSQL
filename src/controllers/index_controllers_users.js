@@ -301,6 +301,99 @@ const addCat = async (req,res) => {
     }
 };
 
+//obtiene las categorias del usuario en cuestion. 
+const getCat = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //miro si tiene una categoria con ese nombre
+    const resp = 
+    await conexion.query('SELECT nombrecat from categorias where (mail=$1)',[usuarioPrincipal]);
+    //envío resultado a cliente
+    res.status(200).json(resp.rows);
+};
+
+//añade una categoria del usuario a una contraseña.
+const addCatToPasswd = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //necesito el nombr de la categoria y de la contraseña.
+    const {nombrecategoria,nombrePassword} = req.body;
+
+    //miro si tiene una categoria con ese nombre
+    const resp = 
+    await conexion.query('SELECT * from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
+
+    if (resp.rowCount==0) {
+        //no existe categoria con ese nombre para ese user
+        res.status(404).json({
+            message: 'no existe categoria con ese nombre para ese user'
+        })
+        
+    }
+    else {
+        //puedo asignarla
+        //del nombre de la contraseña que me pasen me fío, pero compruebo aun así.
+        const resp = 
+        await conexion.query('UPDATE contrasenya SET categoria=$1 where (nombre=$2 AND email=$3)',[nombrecategoria,nombrePassword,usuarioPrincipal]);
+
+        if (resp.rowCount>0)
+            res.status(200).json({
+                message: 'Password´s category updated correctly'
+            })
+        else {
+            res.status(404).json({
+                message: 'No password with that name for the user'
+            })
+        }
+    }
+};
+
+//elimina categoria y obviamente, pone a null el campo "categoria" de las 
+//contraseñas pertenecientes a esa categoria. 
+const deleteCat = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    const {nombrecategoria} = req.body;
+    //miro si tiene una categoria con ese nombre
+    const resp = 
+    await conexion.query('SELECT * from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
+
+    if (resp.rowCount==0) {
+        //ninguna categoria llamada de esa manera
+        res.status(404).json({
+            message: 'No category with that name to be deleted'
+        })
+        
+    }
+    else {
+        //quito la categoria de las contraseñas que la tenian
+        const resp = 
+        await conexion.query('UPDATE contrasenya SET categoria=$1 where (categoria=$2 AND email=$3)',[null,nombrecategoria,usuarioPrincipal]);
+        //elimino la categoria para ese user
+        const resp2 = 
+        await conexion.query('DELETE from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
+        res.status(404).json({
+            message: 'Category deleted'
+        })
+    }
+};
+
+//obtiene las contraseñas asociadas a la categoria x del usuario. 
+const filterCat = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //cojo el nombre de la categoria que pasan como QUERY paramter.
+    let nombrecategoria = req.query.nombrecategoria;
+    //** no miro si tiene una categoria con ese nombre ** (me fio de front que 
+    //le de para seleccionar solo entre las que el user tenga)
+
+    console.log(usuarioPrincipal + " " + nombrecategoria);
+    const resp = 
+    await conexion.query('SELECT nombre,tipo from contrasenya where (email=$1 AND categoria=$2)',[usuarioPrincipal,nombrecategoria]);
+    console.log(resp);
+    //envío al cliente el JSON con las passwds que tiene ese user
+    res.status(200).json(resp.rows);
+};
 
 
 //aquí simplemente digo que exporto las funciones aquí definidas para que
@@ -314,5 +407,9 @@ module.exports = {
     getPasswdsUser,
     detailsPasswd,
     userChangePw,
-    addCat
+    addCat,
+    getCat,
+    addCatToPasswd,
+    deleteCat,
+    filterCat
 }
