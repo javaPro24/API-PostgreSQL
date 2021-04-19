@@ -359,6 +359,11 @@ const editpasswd = async (req,res) => {
     //hago el UPDATE
     const aux = await conexion.query('UPDATE from contrasenya SET concreteuser=$1,concretepasswd=$2,dominio=$3,categoria=$4,fechacreacion=$5,fechacaducidad=$6,nombre=$7 where nombre=$8',
     [concreteuser,concretepasswd,dominio,categoria,fechacreacion,fechacaducidad,nombre,nombrePassword]);
+
+    res.status(200).json({
+        message: 'Contraseña editada correctamente!!'
+    })
+
 };
 
 
