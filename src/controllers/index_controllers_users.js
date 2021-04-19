@@ -199,6 +199,7 @@ const getPasswdsUser = async (req,res) => {
     //cojo los parametros de ordenacion que me pasan en la QUERY
     let ordenarPor = req.query.ordenarPor;  //nombre, fechacreacion ó fechacaducidad
     let ordenarDe = req.query.ordenarDe;    //ASC o DESC
+    //let elemento = req.query.elemento;      //¿Qué quiere front que le pase?
 
     //NO DEJA USAR ORDER BY $1. Hay que hacerlo manualmente.
     var resp;
@@ -348,6 +349,18 @@ const deletepasswd = async (req,res) => {
     }
 };
 
+//elimina la contraseña con el nombre que sea
+const editpasswd = async (req,res) => {
+    //cojo el nombre de la password solicitada
+    const {nombrePassword,concreteuser,concretepasswd,dominio,categoria,fechacreacion,fechacaducidad,nombre} = req.body;
+    //cojo el nombre de usuario del token que me han pasado
+    const usuarioPrincipal = req.usuario;
+
+    //hago el UPDATE
+    const aux = await conexion.query('UPDATE from contrasenya SET concreteuser=$1,concretepasswd=$2,dominio=$3,categoria=$4,fechacreacion=$5,fechacaducidad=$6,nombre=$7 where nombre=$8',
+    [concreteuser,concretepasswd,dominio,categoria,fechacreacion,fechacaducidad,nombre,nombrePassword]);
+};
+
 
 // -------------- CATEGORIES --------------
 
@@ -479,12 +492,13 @@ module.exports = {
     userLogin,
     userSignin,
     userRemove,
+    userChangePw,
     pruebilla,
     addpwtoUser,
     getPasswdsUser,
     detailsPasswd,
     deletepasswd,
-    userChangePw,
+    editpasswd,
     addCat,
     getCat,
     addCatToPasswd,
