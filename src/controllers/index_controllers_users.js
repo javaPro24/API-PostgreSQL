@@ -456,7 +456,7 @@ const deleteCat = async (req,res) => {
     const resp = 
     await conexion.query('SELECT * from categorias where (mail=$1 AND nombrecat=$2)',[usuarioPrincipal,nombrecategoria]);
 
-    console.log(resp);
+    console.log(nombrecategoria);
 
     if (resp.rowCount==0) {
         //ninguna categoria llamada de esa manera
