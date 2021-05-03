@@ -119,6 +119,28 @@ router.delete('/deletecat',rutasProtegidas,deleteCat);
 //filtramos por categoria en específico
 router.get('/filtercat',rutasProtegidas,filterCat);
 
+// -------------- IMÁGENES --------------
+const multer = require('multer');
+const path = require('path');
+const diskstorage = multer.diskStorage ({
+    destination: path.join(__dirname, '../images'),
+    filename : (req,file,cb) => {
+        //forma en la que se guarda la imagen (nombre)
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+
+// single('image') es importante. pongo 'image' porq es el nombre que pone
+// el front al hacer el formdata.append('image',file)
+const fileUpload = multer({
+    storage:diskstorage
+}).single('image');
+
+router.post('/addPic',rutasProtegidas,fileUpload,addPic);
+
+router.get('/getPic',rutasProtegidas,getPic);
+
+router.delete('/deletePic',rutasProtegidas,deletePic);
 
 
 module.exports = router;
