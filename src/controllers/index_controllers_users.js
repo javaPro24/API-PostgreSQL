@@ -512,7 +512,7 @@ const addPic = async (req,res) => {
     const hasFileAlready =
     await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombre]);
 
-    if (hasFileAlready.rowCount==0) {
+    /*if (hasFileAlready.rowCount==0) {
         //leo los datos del fichero para meterlo en base de datos
         const fichero = fs.readFileSync(path.join(__dirname, '../images/' + req.file.filename))
         //cifro los datos del fichero
@@ -542,7 +542,9 @@ const addPic = async (req,res) => {
         res.status(404).json({
             message: 'User has already a pic with that name bro. Relax.'
         })
-    }
+    }*/
+
+    res.send("hey");
 };
 
 //obtengo la imagen de nombre x para el usuario y
