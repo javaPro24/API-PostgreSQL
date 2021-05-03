@@ -508,6 +508,8 @@ const addPic = async (req,res) => {
         body: {nombre,categoria,fechacreacion,fechacaducidad}
     }=req;
 
+    console.log(nombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad)
+
     //comprobamos si ya tiene una imagen con ese nombre
     const hasFileAlready =
     await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombre]);
