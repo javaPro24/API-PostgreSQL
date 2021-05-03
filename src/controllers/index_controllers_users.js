@@ -604,30 +604,6 @@ const deletePic = async (req,res) => {
     }
 };
 
-//añado una imagen al usuario
-const addPic2 = async (req,res) => {
-    //cojo nombre del usuario del token que me pasa.
-    const usuarioPrincipal = req.usuario;
-    //el tipo será una imagen
-    const tipo = "imagen";
-    //cojo el resto de atributos que me interesan
-    const {
-        body: {nombre,categoria,fechacreacion,fechacaducidad,data}
-    }=req;
-
-    console.log(nombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad)
-
-    let buff = new Buffer(data,'base64');
-    
-    //comprobamos si ya tiene una imagen con ese nombre
-    fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), buff)
-
-    res.json({
-        message : 'hey'
-    })
-    
-};
-
 // -------------- FICHEROS --------------
 
 
