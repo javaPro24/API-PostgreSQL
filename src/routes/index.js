@@ -8,7 +8,7 @@ const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
 const {userLogin, userSignin, userRemove, userChangePw, pruebilla, addpwtoUser, deletepasswd, getPasswdsUser,detailsPasswd, editpasswd,
-    addCat,addCatToPasswd,getCat,deleteCat,filterCat} = require('../controllers/index_controllers_users');
+    addCat,addCatToPasswd,getCat,deleteCat,filterCat,addPic,deletePic,getPic} = require('../controllers/index_controllers_users');
 
 //middleware para comprobar token
 /*function rutasProtegidas(req, res, next) {
