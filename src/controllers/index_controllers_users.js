@@ -622,7 +622,9 @@ const addPic2 = async (req,res) => {
     //comprobamos si ya tiene una imagen con ese nombre
     fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), buff)
 
-    res.send("bien")
+    res.json({
+        message : 'hey'
+    })
     
 };
 
