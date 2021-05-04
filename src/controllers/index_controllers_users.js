@@ -535,11 +535,15 @@ const addPic = async (req,res) => {
         })
 
         //respondo a cliente
-        res.send("ok")
+        res.json({
+            message : 'ok'
+        })
     }
     else {
         //error. Ya hay una pic con ese nombre
-        res.send("no ok");
+        res.json({
+            message : 'no ok'
+        })
     }
 };
 
