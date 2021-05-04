@@ -608,6 +608,56 @@ const deletePic = async (req,res) => {
     }
 };
 
+//actualizo una imagen
+const editPic = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //el tipo será una imagen
+    const tipo = "imagen";
+    //cojo el resto de atributos que me interesan
+    const {
+        body: {nuevoNombre,categoria,fechacreacion,fechacaducidad,nombreAntiguo}
+    }=req;
+
+    console.log(nombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad)
+
+    //comprobamos si ya tiene una imagen con ese nombre
+    const hasFileAlready =
+    await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombre]);
+
+    if (hasFileAlready.rowCount!=0) {
+        //leo los datos del fichero para meterlo en base de datos
+        const fichero = fs.readFileSync(path.join(__dirname, '../images/' + req.file.filename))
+        //cifro los datos del fichero
+        const encrypted_passwd = encryptFile(fichero);
+
+        //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
+        const resp =
+        await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, fichero=$4, nombre=$5 where (nombre=$6 and email=$7)',
+        [categoria,fechacreacion,fechacaducidad,encrypted_passwd,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
+
+        // Delete the file like normal
+        fs.unlink(req.file.path, (err) => {
+            if (err) {
+            console.error(err)
+            return
+            }
+            //file removed
+        })
+
+        //respondo a cliente
+        res.json({
+            message : 'ok'
+        })
+    }
+    else {
+        //error. Ya hay una pic con ese nombre
+        res.json({
+            message : 'no ok'
+        })
+    }
+};
+
 // -------------- FICHEROS --------------
 
 
@@ -632,5 +682,6 @@ module.exports = {
     filterCat,
     addPic,
     getPic,
-    deletePic
+    deletePic,
+    editPic
 }
