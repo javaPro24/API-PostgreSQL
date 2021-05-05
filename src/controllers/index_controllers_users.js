@@ -652,7 +652,7 @@ const editPic = async (req,res) => {
         }
         else {
             const resp =
-            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, nombre=$5 where (nombre=$6 and email=$7)',
+            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, nombre=$4 where (nombre=$5 and email=$6)',
             [categoria,fechacreacion,fechacaducidad,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
         }
 
