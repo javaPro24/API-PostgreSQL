@@ -24,6 +24,10 @@ app.use(require('./routes/index'));
 app.listen(config.PORT);
 console.log('Server on port ' + config.PORT);
 
+//MULTER
+const path = require('path');
+app.use(express.static(path.join(__dirname,'../imagesdb/')))
+
 /*https.createServer({
     key: fs.readFileSync('my_cert.key'),
     cert: fs.readFileSync('my_cert.crt')

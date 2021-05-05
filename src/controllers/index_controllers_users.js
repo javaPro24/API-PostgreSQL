@@ -552,16 +552,16 @@ const getPic = async (req,res) => {
     //cojo nombre del usuario del token que me pasa.
     const usuarioPrincipal = req.usuario;
     //cojo el nombre de la imaen que el quiere
-    let nombreImagen = req.query.nombre;
+    let nombre = req.query.nombre;
 
     //seleccionamos la imagen del usuario e intentamos sacar los bytes.
-    const resp =
-    await conexion.query('SELECT nombre,fichero FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombreImagen,'imagen']);
+    const resp = 
+    await conexion.query('SELECT nombre,fichero,categoria,fechacaducidad,fechacreacion FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'imagen']);
 
     if (resp.rowCount==0) {
         //ninguna contraseña con ese nombre
         res.status(404).json({
-            message : 'No pic with that name bro. Chill it.'
+            message : 'no ok'
         })
     }
     else {
@@ -574,8 +574,12 @@ const getPic = async (req,res) => {
         fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), ficheroPlano)
 
         //respondo a cliente
+        var respuesta = resp.rows[0].nombre+'.jpg'
         res.status(200).json({
-            file: ficheroPlano
+            nombreImagen : respuesta,
+            categoria : resp.rows[0].categoria,
+            fechacaducidad : resp.rows[0].fechacaducidad,
+            fechacreacion : resp.rows[0].fechacreacion
         })
     }
 };
@@ -658,6 +662,34 @@ const editPic = async (req,res) => {
     }
 };
 
+//metodo auxiliar para saber cuando eliminar foto de la carpeta (NO DE LA BD)
+const aux = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //cojo el nombre de la imaen que el quiere
+    const {nombreImagen} = req.body;
+    //eliminamos la foto que nos pasa el user
+    const pathToFile = path.join(__dirname, '../../imagesdb/')
+    const pathFinal = path.join(pathToFile,nombreImagen)
+    //unlinkear las imagenes
+    fs.unlink(pathFinal, (err) => {
+        if (err) {
+            console.error(err)
+            res.json({
+                message : 'ok'
+            })
+        }
+        else {
+            console.log("Image deleted succesfully from fs")
+            res.json({
+                message : 'no ok'
+            })
+        }
+        
+    }) 
+};
+
+
 // -------------- FICHEROS --------------
 
 
@@ -683,5 +715,6 @@ module.exports = {
     addPic,
     getPic,
     deletePic,
-    editPic
+    editPic,
+    aux
 }
