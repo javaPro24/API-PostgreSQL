@@ -623,7 +623,7 @@ const editPic = async (req,res) => {
         body: {nuevoNombre,categoria,fechacreacion,fechacaducidad,nombreAntiguo}
     }=req;
 
-    console.log(nombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad)
+    console.log(nuevoNombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad+' '+nombreAntiguo)
 
     //comprobamos si ya tiene una imagen con ese nombre
     const hasFileAlready =
