@@ -620,7 +620,7 @@ const editPic = async (req,res) => {
     const tipo = "imagen";
     //cojo el resto de atributos que me interesan
     const {
-        body: {nuevoNombre,categoria,fechacreacion,fechacaducidad,nombreAntiguo}
+        body: {nuevoNombre,categoria,fechacreacion,fechacaducidad,nombreAntiguo,actualizaImagen}
     }=req;
 
     console.log(nuevoNombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad+' '+nombreAntiguo)
@@ -630,24 +630,31 @@ const editPic = async (req,res) => {
     await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombreAntiguo]);
 
     if (hasFileAlready.rowCount!=0) {
-        //leo los datos del fichero para meterlo en base de datos
-        const fichero = fs.readFileSync(path.join(__dirname, '../images/' + req.file.filename))
-        //cifro los datos del fichero
-        const encrypted_passwd = encryptFile(fichero);
+        if (actualizaImagen=='si') {
+            //leo los datos del fichero para meterlo en base de datos
+            const fichero = fs.readFileSync(path.join(__dirname, '../images/' + req.file.filename))
+            //cifro los datos del fichero
+            const encrypted_passwd = encryptFile(fichero);
 
-        //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
-        const resp =
-        await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, fichero=$4, nombre=$5 where (nombre=$6 and email=$7)',
-        [categoria,fechacreacion,fechacaducidad,encrypted_passwd,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
+            //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
+            const resp =
+            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, fichero=$4, nombre=$5 where (nombre=$6 and email=$7)',
+            [categoria,fechacreacion,fechacaducidad,encrypted_passwd,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
 
-        // Delete the file like normal
-        fs.unlink(req.file.path, (err) => {
-            if (err) {
-            console.error(err)
-            return
-            }
-            //file removed
-        })
+            // Delete the file like normal
+            fs.unlink(req.file.path, (err) => {
+                if (err) {
+                console.error(err)
+                return
+                }
+                //file removed
+            })
+        }
+        else {
+            const resp =
+            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, nombre=$5 where (nombre=$6 and email=$7)',
+            [categoria,fechacreacion,fechacaducidad,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
+        }
 
         //respondo a cliente
         res.json({
