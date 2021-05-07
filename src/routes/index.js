@@ -123,7 +123,7 @@ router.get('/filtercat',rutasProtegidas,filterCat);
 const multer = require('multer');
 const path = require('path');
 const diskstorage = multer.diskStorage ({
-    destination: path.join(__dirname, '../file/'),
+    destination: path.join(__dirname, '../images'),
     filename : (req,file,cb) => {
         //forma en la que se guarda la imagen (nombre)
         cb(null, Date.now() + '-' + file.originalname)
@@ -161,6 +161,6 @@ const fileUpload2 = multer({
     storage:diskstorageFile
 }).single('file');
 
-router.post('/addFile',rutasProtegidas,fileUpload2,addFile);
+router.post('/addFile',rutasProtegidas,fileUpload2,addFile)
 
 module.exports = router;

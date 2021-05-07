@@ -790,11 +790,11 @@ const addFile = async (req,res) => {
 
     if (hasFileAlready.rowCount==0) {
         //leo los datos del fichero para meterlo en base de datos
-        const fichero = fs.readFileSync(path.join(__dirname, '../file/' + req.file.filename))
+        const fichero = fs.readFileSync(path.join(__dirname, '../files/' + req.file.filename))
         //cifro los datos del fichero
         const encrypted_passwd = encryptFile(fichero);
 
-        //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
+        //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESE FICHERO YA.
         const resp =
         await conexion.query('INSERT INTO contrasenya (email,tipo,fichero,categoria,fechacreacion,fechacaducidad,nombre) VALUES ($1,$2,$3,$4,$5,$6,$7)',
         [usuarioPrincipal,tipo,encrypted_passwd,categoria,fechacreacion,fechacaducidad,nombre]);
