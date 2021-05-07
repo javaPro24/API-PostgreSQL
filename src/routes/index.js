@@ -8,7 +8,7 @@ const config = require('../../env/config');
 
 //cojo la función de getUsers del fichero controllers.
 const {userLogin, userSignin, userRemove, userChangePw, pruebilla, addpwtoUser, deletepasswd, getPasswdsUser,detailsPasswd, editpasswd,
-    addCat,addCatToPasswd,getCat,deleteCat,filterCat,addPic,deletePic,getPic,editPic,aux} = require('../controllers/index_controllers_users');
+    addCat,addCatToPasswd,getCat,deleteCat,filterCat,addPic,deletePic,getPic,editPic,aux,getPicWeb,addFile} = require('../controllers/index_controllers_users');
 
 //middleware para comprobar token
 /*function rutasProtegidas(req, res, next) {
@@ -123,7 +123,7 @@ router.get('/filtercat',rutasProtegidas,filterCat);
 const multer = require('multer');
 const path = require('path');
 const diskstorage = multer.diskStorage ({
-    destination: path.join(__dirname, '../images'),
+    destination: path.join(__dirname, '../file/'),
     filename : (req,file,cb) => {
         //forma en la que se guarda la imagen (nombre)
         cb(null, Date.now() + '-' + file.originalname)
@@ -146,5 +146,21 @@ router.post('/editPic',rutasProtegidas,fileUpload,editPic);
 
 router.post('/aux',rutasProtegidas,aux);
 
+router.get('/getPicWeb',rutasProtegidas,getPicWeb);
+
+// -------------- FICHEROS --------------
+const diskstorageFile = multer.diskStorage ({
+    destination: path.join(__dirname, '../files'),
+    filename : (req,file,cb) => {
+        //forma en la que se guarda la imagen (nombre)
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+
+const fileUpload2 = multer({
+    storage:diskstorageFile
+}).single('file');
+
+router.post('/addFile',rutasProtegidas,fileUpload2,addFile);
 
 module.exports = router;

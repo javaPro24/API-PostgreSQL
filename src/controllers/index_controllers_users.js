@@ -696,9 +696,130 @@ const aux = async (req,res) => {
     }) 
 };
 
+//método para devolver todas las imágenes al front
+const getPicWeb = async (req,res) => {
+    /*
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //cojo los parametros de ordenacion que me pasan en la QUERY
+    let ordenarPor = req.query.ordenarPor;  //nombre, fechacreacion ó fechacaducidad
+    let ordenarDe = req.query.ordenarDe;    //ASC o DESC
+    //let elemento = req.query.elemento;      //¿Qué quiere front que le pase?
+
+    //NO DEJA USAR ORDER BY $1. Hay que hacerlo manualmente.
+    var resp;
+    switch(ordenarPor) {
+        case "nombre":
+            if (ordenarDe=="ASC") {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY nombre ASC',[usuarioPrincipal,'imagen']);
+            }
+            else {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY nombre DESC',[usuarioPrincipal,'imagen']);
+            }
+        break;
+
+        case "fechacreacion":
+            if (ordenarDe=="ASC") {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY fechacreacion ASC',[usuarioPrincipal,'imagen']);
+            }
+            else {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY fechacreacion DESC',[usuarioPrincipal,'imagen']);
+            }
+        break;
+
+        case "fechacaducidad":
+            if (ordenarDe=="ASC") {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY fechacaducidad ASC',[usuarioPrincipal,'imagen']);
+            }
+            else {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY fechacaducidad DESC',[usuarioPrincipal,'imagen']);
+            }
+        break;
+
+        case "categoria":
+            if (ordenarDe=="ASC") {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY categoria ASC',[usuarioPrincipal,'imagen']);
+            }
+            else {
+                resp =
+                await conexion.query('SELECT nombre,fichero,fechacreacion,fechacaducidad,categoria from contrasenya where email=$1 and tipo=$2 ORDER BY categoria DESC',[usuarioPrincipal,'imagen']);
+            }
+        break;
+
+    }
+    //escribimos las imagenes en la URL
+    resp.rows.map(ficheroCifrado=>{
+        ficheroPlano = decryptFile(ficheroCifrado);
+    })
+    var ficheroCifrado = resp.rows.fichero;
+    //descifro el contenido
+    const ficheroPlano = decryptFile(ficheroCifrado);
+
+    //reconstruyo la pic con los datos para ver si realmente rula
+    fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), ficheroPlano)
+
+    res.status(200).json(resp.rows);
+    */
+};
 
 // -------------- FICHEROS --------------
 
+//añado un ficherito
+const addFile = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //el tipo será una imagen
+    const tipo = "file";
+    //cojo el resto de atributos que me interesan
+    const {
+        body: {nombre,categoria,fechacreacion,fechacaducidad}
+    }=req;
+
+    console.log(nombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad)
+
+    //comprobamos si ya tiene una imagen con ese nombre
+    const hasFileAlready =
+    await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'file']);
+
+    if (hasFileAlready.rowCount==0) {
+        //leo los datos del fichero para meterlo en base de datos
+        const fichero = fs.readFileSync(path.join(__dirname, '../file/' + req.file.filename))
+        //cifro los datos del fichero
+        const encrypted_passwd = encryptFile(fichero);
+
+        //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
+        const resp =
+        await conexion.query('INSERT INTO contrasenya (email,tipo,fichero,categoria,fechacreacion,fechacaducidad,nombre) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+        [usuarioPrincipal,tipo,encrypted_passwd,categoria,fechacreacion,fechacaducidad,nombre]);
+
+        // Delete the file like normal
+        fs.unlink(req.file.path, (err) => {
+            if (err) {
+            console.error(err)
+            return
+            }
+            //file removed
+        })
+
+        //respondo a cliente
+        res.json({
+            message : 'ok'
+        })
+    }
+    else {
+        //error. Ya hay una pic con ese nombre
+        res.json({
+            message : 'no ok'
+        })
+    }
+};
 
 
 //aquí simplemente digo que exporto las funciones aquí definidas para que
@@ -723,5 +844,7 @@ module.exports = {
     getPic,
     deletePic,
     editPic,
-    aux
+    aux,
+    getPicWeb,
+    addFile
 }
