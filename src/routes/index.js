@@ -165,6 +165,6 @@ router.post('/addFile',rutasProtegidas,fileUpload2,addFile)
 
 router.post('/editCat',rutasProtegidas,editCat)
 
-router.post('/getFile',rutasProtegidas,fileUpload2,getFile)
+router.get('/getFile',rutasProtegidas,fileUpload2,getFile)
 
 module.exports = router;
