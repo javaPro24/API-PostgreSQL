@@ -27,6 +27,7 @@ console.log('Server on port ' + config.PORT);
 //MULTER
 const path = require('path');
 app.use(express.static(path.join(__dirname,'../imagesdb/')))
+app.use(express.static(path.join(__dirname,'../filesdb/')))
 
 /*https.createServer({
     key: fs.readFileSync('my_cert.key'),
