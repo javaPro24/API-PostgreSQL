@@ -821,6 +821,23 @@ const addFile = async (req,res) => {
     }
 };
 
+//edito una categoría
+const editCat = async (req,res) => {
+    //edito la categoría del usuario X.
+    //todas las contraseñas con tenían esa categoría, ahora tienen la nueva
+    const usuarioPrincipal = req.usuario;
+    const {nomCatAntigua, nomCatNueva} = req.body;
+
+    //actualizamos el nombre de la categoría en la tabla categorías
+    const aux = await conexion.query('UPDATE categorias SET nombrecat=$1 where (mail=$2 and nombrecat=$3)',[nomCatNueva,usuarioPrincipal,nomCatAntigua]);
+    
+    //le cambiamos la categoría a aquellas passwords que la tenían
+    const aux2 = await conexion.query('UPDATE contrasenya SET categoria=$1 where (email=$2 and categoria=$3)',[nomCatNueva,usuarioPrincipal,nomCatAntigua]);
+
+    res.json ({
+        message : 'ok'
+    })
+}
 
 //aquí simplemente digo que exporto las funciones aquí definidas para que
 //se puedan usar en el módulo de index.js (routes)
@@ -846,5 +863,6 @@ module.exports = {
     editPic,
     aux,
     getPicWeb,
-    addFile
+    addFile,
+    editCat
 }
