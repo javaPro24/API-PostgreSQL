@@ -821,6 +821,43 @@ const addFile = async (req,res) => {
     }
 };
 
+//cojo un fichero
+const getFile = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //cojo el nombre de la imaen que el quiere
+    let nombre = req.query.nombre;
+
+    //seleccionamos la imagen del usuario e intentamos sacar los bytes.
+    const resp = 
+    await conexion.query('SELECT nombre,fichero,categoria,fechacaducidad,fechacreacion FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'imagen']);
+
+    if (resp.rowCount==0) {
+        //ninguna contraseña con ese nombre
+        res.status(404).json({
+            message : 'no ok'
+        })
+    }
+    else {
+        //obtengo el contenido del fichero (cifrado)
+        var ficheroCifrado = resp.rows[0].fichero;
+        //descifro el contenido
+        const ficheroPlano = decryptFile(ficheroCifrado);
+
+        //reconstruyo la pic con los datos para ver si realmente rula
+        fs.writeFileSync(path.join(__dirname, '../../filesdb/' + resp.rows[0].nombre + '.pdf'), ficheroPlano)
+
+        //respondo a cliente
+        var respuesta = resp.rows[0].nombre+'.pdf'
+        res.status(200).json({
+            nombreImagen : respuesta,
+            categoria : resp.rows[0].categoria,
+            fechacaducidad : resp.rows[0].fechacaducidad,
+            fechacreacion : resp.rows[0].fechacreacion
+        })
+    }
+};
+
 //edito una categoría
 const editCat = async (req,res) => {
     //edito la categoría del usuario X.
@@ -837,7 +874,7 @@ const editCat = async (req,res) => {
     res.json ({
         message : 'ok'
     })
-}
+};
 
 //aquí simplemente digo que exporto las funciones aquí definidas para que
 //se puedan usar en el módulo de index.js (routes)
@@ -864,5 +901,6 @@ module.exports = {
     aux,
     getPicWeb,
     addFile,
-    editCat
+    editCat,
+    getFile
 }
