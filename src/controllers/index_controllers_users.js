@@ -830,7 +830,7 @@ const getFile = async (req,res) => {
 
     //seleccionamos la imagen del usuario e intentamos sacar los bytes.
     const resp = 
-    await conexion.query('SELECT nombre,fichero,categoria,fechacaducidad,fechacreacion FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'imagen']);
+    await conexion.query('SELECT nombre,fichero,categoria,fechacaducidad,fechacreacion FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'file']);
 
     if (resp.rowCount==0) {
         //ninguna contraseña con ese nombre
