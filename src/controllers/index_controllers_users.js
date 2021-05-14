@@ -858,6 +858,63 @@ const getFile = async (req,res) => {
     }
 };
 
+//edito un fichero
+const editFile = async (req,res) => {
+    //cojo nombre del usuario del token que me pasa.
+    const usuarioPrincipal = req.usuario;
+    //el tipo será una imagen
+    const tipo = "file";
+    //cojo el resto de atributos que me interesan
+    const {
+        body: {nuevoNombre,categoria,fechacreacion,fechacaducidad,nombreAntiguo,actualizaImagen}
+    }=req;
+
+    console.log(nuevoNombre+' '+categoria+' '+fechacreacion+' '+fechacaducidad+' '+nombreAntiguo)
+
+    //comprobamos si ya tiene una imagen con ese nombre
+    const hasFileAlready =
+    await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombreAntiguo]);
+
+    if (hasFileAlready.rowCount!=0) {
+        if (actualizaImagen=='si') {
+            //leo los datos del fichero para meterlo en base de datos
+            const fichero = fs.readFileSync(path.join(__dirname, '../files/' + req.file.filename))
+            //cifro los datos del fichero
+            const encrypted_passwd = encryptFile(fichero);
+
+            //hacemos la inserción. QUEDA COMPROBAR QUE NO TENGA ESA IMAGEN YA.
+            const resp =
+            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, fichero=$4, nombre=$5 where (nombre=$6 and email=$7)',
+            [categoria,fechacreacion,fechacaducidad,encrypted_passwd,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
+
+            // Delete the file like normal
+            fs.unlink(req.file.path, (err) => {
+                if (err) {
+                console.error(err)
+                return
+                }
+                //file removed
+            })
+        }
+        else {
+            const resp =
+            await conexion.query('UPDATE contrasenya SET categoria=$1, fechacreacion=$2, fechacaducidad=$3, nombre=$4 where (nombre=$5 and email=$6)',
+            [categoria,fechacreacion,fechacaducidad,nuevoNombre,nombreAntiguo,usuarioPrincipal]);
+        }
+
+        //respondo a cliente
+        res.json({
+            message : 'ok'
+        })
+    }
+    else {
+        //error. Ya hay una pic con ese nombre
+        res.json({
+            message : 'no ok'
+        })
+    }
+};
+
 //edito una categoría
 const editCat = async (req,res) => {
     //edito la categoría del usuario X.
@@ -902,5 +959,6 @@ module.exports = {
     getPicWeb,
     addFile,
     editCat,
-    getFile
+    getFile,
+    editFile
 }
