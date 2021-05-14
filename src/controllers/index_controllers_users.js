@@ -759,7 +759,7 @@ const getPicWeb = async (req,res) => {
         fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + fila.nombre + '.jpg'), decryptFile(fila.fichero))
     })
 
-    console.log(resp.rows.nombre)
+    console.log(resp.rows)
     
     res.status(200).json({
         nombres : resp.rows.nombre,
