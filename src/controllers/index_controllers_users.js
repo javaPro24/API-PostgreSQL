@@ -753,7 +753,9 @@ const getPicWeb = async (req,res) => {
         break;
 
     }
-    console.log(resp.rows)
+
+    /*console.log(resp.rows)
+
     //escribimos las imagenes en la URL
     resp.rows.map(ficheroCifrado=>{
         ficheroPlano = decryptFile(ficheroCifrado.fichero);
@@ -764,9 +766,9 @@ const getPicWeb = async (req,res) => {
     //reconstruyo la pic con los datos para ver si realmente rula
     ficheroPlano.map(ficheroDescifrado => {
         fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), ficheroPlano)
-    })
+    })*/
 
-    res.status(200).json(resp.rows);
+    res.status(200).json({message: 'hola'});
     
 };
 
