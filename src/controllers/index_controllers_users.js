@@ -698,7 +698,6 @@ const aux = async (req,res) => {
 
 //método para devolver todas las imágenes al front
 const getPicWeb = async (req,res) => {
-    /*
     //cojo nombre del usuario del token que me pasa.
     const usuarioPrincipal = req.usuario;
     //cojo los parametros de ordenacion que me pasan en la QUERY
@@ -756,17 +755,16 @@ const getPicWeb = async (req,res) => {
     }
     //escribimos las imagenes en la URL
     resp.rows.map(ficheroCifrado=>{
-        ficheroPlano = decryptFile(ficheroCifrado);
+        ficheroPlano = decryptFile(ficheroCifrado.fichero);
     })
-    var ficheroCifrado = resp.rows.fichero;
-    //descifro el contenido
-    const ficheroPlano = decryptFile(ficheroCifrado);
-
+   
     //reconstruyo la pic con los datos para ver si realmente rula
-    fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), ficheroPlano)
+    ficheroPlano.map(ficheroDescifrado => {
+        fs.writeFileSync(path.join(__dirname, '../../imagesdb/' + resp.rows[0].nombre + '.jpg'), ficheroPlano)
+    })
 
     res.status(200).json(resp.rows);
-    */
+    
 };
 
 // -------------- FICHEROS --------------
