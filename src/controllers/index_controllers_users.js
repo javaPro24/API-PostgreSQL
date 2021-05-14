@@ -754,14 +754,14 @@ const getPicWeb = async (req,res) => {
 
     }
 
-    /*console.log(resp.rows)
+    console.log(resp.rows)
 
     //escribimos las imagenes en la URL
     resp.rows.map(ficheroCifrado=>{
         ficheroPlano = decryptFile(ficheroCifrado.fichero);
     })
 
-    console.log(ficheroPlano)
+    /*console.log(ficheroPlano)
    
     //reconstruyo la pic con los datos para ver si realmente rula
     ficheroPlano.map(ficheroDescifrado => {
