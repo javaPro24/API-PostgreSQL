@@ -761,12 +761,7 @@ const getPicWeb = async (req,res) => {
 
     console.log(resp.rows)
     
-    res.status(200).json({
-        nombres : resp.rows.nombre,
-        fechascreacion : resp.rows.fechacreacion,
-        fechascaducidad : resp.rows.fechascaducidad,
-        categorias : resp.rows.categorias
-    });
+    res.status(200).json(resp.rows);
     
 };
 
