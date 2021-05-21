@@ -795,7 +795,7 @@ const addFile = async (req,res) => {
 
     //comprobamos si ya tiene una imagen con ese nombre
     const hasFileAlready =
-    await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2 and tipo=$3)', [usuarioPrincipal,nombre,'file']);
+    await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nombre]);
 
     if (hasFileAlready.rowCount==0) {
         //leo los datos del fichero para meterlo en base de datos
