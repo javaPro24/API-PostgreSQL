@@ -358,16 +358,29 @@ const editpasswd = async (req,res) => {
     //cojo el nombre de usuario del token que me han pasado
     const usuarioPrincipal = req.usuario;
 
-    //ciframos la passwd
-    const encrypted_passwd = cryptr.encrypt(concretepasswd);
+    //comprobamos que no tiene una con ese nombre
+    //comprobamos si ya tiene una contra con ese nombre
+    const aux = await conexion.query('select nombre from contrasenya where (email=$1 and nombre=$2)',[usuarioPrincipal,nombre]);
 
-    //hago el UPDATE
-    const aux = await conexion.query('UPDATE contrasenya SET concreteuser=$1,concretepasswd=$2,dominio=$3,categoria=$4,fechacreacion=$5,fechacaducidad=$6,nombre=$7 where nombre=$8',
-    [concreteuser,encrypted_passwd,dominio,categoria,fechacreacion,fechacaducidad,nombre,nombrePassword]);
+    if (aux.rows==0) {
+        //no hay, la añado
+        //ciframos la passwd
+        const encrypted_passwd = cryptr.encrypt(concretepasswd);
 
-    res.status(200).json({
-        message: 'Contraseña editada correctamente!!'
-    })
+        //hago el UPDATE
+        const aux = await conexion.query('UPDATE contrasenya SET concreteuser=$1,concretepasswd=$2,dominio=$3,categoria=$4,fechacreacion=$5,fechacaducidad=$6,nombre=$7 where nombre=$8',
+        [concreteuser,encrypted_passwd,dominio,categoria,fechacreacion,fechacaducidad,nombre,nombrePassword]);
+
+        res.status(200).json({
+            message: 'Contraseña editada correctamente!!'
+        })
+
+    }
+    else {
+        res.status(404).json({
+            message: 'Ya tiene una contraseña con ese nombre'
+        })
+    }
 
 };
 
