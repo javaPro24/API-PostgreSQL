@@ -362,7 +362,7 @@ const editpasswd = async (req,res) => {
     //comprobamos si ya tiene una contra con ese nombre
     const aux = await conexion.query('select nombre from contrasenya where (email=$1 and nombre=$2)',[usuarioPrincipal,nombre]);
 
-    if (aux.rows==0) {
+    if (aux.rows==0 || nombrePassword==nombre) {
         //no hay, la añado
         //ciframos la passwd
         const encrypted_passwd = cryptr.encrypt(concretepasswd);
