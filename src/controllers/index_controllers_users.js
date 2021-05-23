@@ -642,7 +642,7 @@ const editPic = async (req,res) => {
     const hasFileAlready =
     await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nuevoNombre]);
 
-    if (hasFileAlready.rowCount==0) {
+    if (hasFileAlready.rowCount==0 || nombreAntiguo==nuevoNombre) {
         if (actualizaImagen=='si') {
             //leo los datos del fichero para meterlo en base de datos
             const fichero = fs.readFileSync(path.join(__dirname, '../images/' + req.file.filename))
@@ -884,7 +884,7 @@ const editFile = async (req,res) => {
     const hasFileAlready =
     await conexion.query('SELECT * FROM contrasenya WHERE (email=$1 and nombre=$2)', [usuarioPrincipal,nuevoNombre]);
 
-    if (hasFileAlready.rowCount==0) {
+    if (hasFileAlready.rowCount==0 || nombreAntiguo==nuevoNombre) {
         if (actualizaImagen=='si') {
             //leo los datos del fichero para meterlo en base de datos
             const fichero = fs.readFileSync(path.join(__dirname, '../files/' + req.file.filename))
